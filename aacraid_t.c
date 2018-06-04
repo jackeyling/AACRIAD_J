@@ -55,17 +55,18 @@
 #include <scsi/scsicam.h>
 #include <scsi/scsi_eh.h>
 
-#define JYAAC_CHARDEV_UNREGISTERED (-1)
-#define JYAAC_DRIVER_FULL_VERSION (-2)
+#define AAC_CHARDEV_UNREGISTERED (-1)
+#define AAC_DRIVER_FULL_VERSION (-2)
 
-static int jyaac_cfg_major = JYAAC_CHARDEV_UNREGISTERED;
-char jyaac_driver_version[] = JYAAC_DRIVER_FULL_VERSION;
+static int aac_cfg_major = AAC_CHARDEV_UNREGISTERED;
+char aac_driver_version[] = "0.0.1";
 
 
-static const struct pci_device_id aac_pci_tbl[]{
+static const struct pci_device_id aac_pci_tbl[]= {
 { 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 1 }, /* Adaptec PMC Series 8 */
 { 0,}
-}
+};
+
 
 int  aac_probe_one(struct pci_dev *dev, const struct pci_device_id *id)	/* New device inserted */
 {
@@ -82,19 +83,26 @@ void aac_shutdown(struct pci_dev * dev)
 
 }
 
+#define AAC_DRIVERNAME  "AACRAID_J"
 
 static struct pci_driver aac_pci_driver = {
 	.name		= AAC_DRIVERNAME,
 	.id_table	= aac_pci_tbl,
 	.probe		= aac_probe_one,
 	.remove		= aac_remove_one,
-#if (defined(CONFIG_PM))
-	.suspend	= aac_suspend,
-	.resume		= aac_resume,
-#endif
+//#if (defined(CONFIG_PM))
+//	.suspend	= aac_suspend,
+//	.resume		= aac_resume,
+//#endif
 	.shutdown	= aac_shutdown,
-/*	.err_handler    = &aac_pci_err_handler, */
+//	.err_handler    = &aac_pci_err_handler, 
 };
+
+
+static void aac_init_char(void)
+{
+	return 0;
+}
 
 
 static int __init aac_init(void)
@@ -117,7 +125,7 @@ static int __init aac_init(void)
 static void __exit aac_exit(void)
 {
 	if (aac_cfg_major > -1)
-		unregister_chrdev(jyaac_cfg_major, "aac");
+		unregister_chrdev(aac_cfg_major, "aac");
 	pci_unregister_driver(&aac_pci_driver);
 }
 
