@@ -62,15 +62,20 @@ static int aac_cfg_major = AAC_CHARDEV_UNREGISTERED;
 char aac_driver_version[] = "0.0.1";
 
 
+struct list_head aac_devices;
+LIST_HEAD(aac_devices);
+
+
 static const struct pci_device_id aac_pci_tbl[]= {
 { 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 1 }, /* Adaptec PMC Series 8 */
 { 0,}
 };
+MODULE_DEVICE_TABLE(pci,aac_pci_tbl);
 
 
-int  aac_probe_one(struct pci_dev *dev, const struct pci_device_id *id)	/* New device inserted */
+static int aac_probe_one(struct pci_dev *dev, const struct pci_device_id *id)	/* New device inserted */
 {
-
+	
 }
 
 void aac_remove_one(struct pci_dev * pdev)
