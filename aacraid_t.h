@@ -5,7 +5,12 @@
 
 
 
-
+struct aac_dev
+{
+	struct list_head	entry;
+	const char		*name;
+	int			id;
+};
 
 
 #endif 

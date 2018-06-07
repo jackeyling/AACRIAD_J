@@ -75,9 +75,36 @@ static const struct pci_device_id aac_pci_tbl[]= {
 MODULE_DEVICE_TABLE(pci,aac_pci_tbl);
 
 
-static int aac_probe_one(struct pci_dev *dev, const struct pci_device_id *id)	/* New device inserted */
+static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)	/* New device inserted */
 {
-	
+	unsigned index = id->driver_data;
+	struct Scsi_host *shost;
+	struct aac_dev *aac;
+	struct list_head *insert = &aac_devices;
+	int error = -ENODEV;
+	int unique_id = 0;
+	u32 i = 0;
+	u32 nr_cpu = 0;
+
+	list_for_each_entry(aac,&aac_devices, entry){
+		printk(KERN_INFO "aac_probe unique_id: %d", unique_id);
+		if(aac->id > unique_id)
+			break;
+		insert = &aac->entry;
+		unique_id++;
+	}
+       
+       	pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1 |
+					PCIE_LINK_STATE_CLKPM);
+	error = pci_enable_device(pdev);
+	if(error){
+		printk(KERN_ERR " %s: PCI deivce not enabled", __FUNCTION__ );
+		goto out;
+	}
+
+
+	out:
+		return error;	
 	
 }
 
