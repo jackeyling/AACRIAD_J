@@ -73,8 +73,9 @@ static const struct pci_device_id aac_pci_tbl[]= {
 MODULE_DEVICE_TABLE(pci,aac_pci_tbl);
 
 
-static int aac_probe_one(struct pci_dev *dev, const struct pci_device_id *id)	/* New device inserted */
+static int __devinit aac_probe_one(struct pci_dev *dev, const struct pci_device_id *id)	/* New device inserted */
 {
+	
 	
 }
 
@@ -88,10 +89,9 @@ void aac_shutdown(struct pci_dev * dev)
 
 }
 
-#define AAC_DRIVERNAME  "AACRAID_J"
 
 static struct pci_driver aac_pci_driver = {
-	.name		= AAC_DRIVERNAME,
+	.name		= "aacraid",
 	.id_table	= aac_pci_tbl,
 	.probe		= aac_probe_one,
 	.remove		= aac_remove_one,
@@ -115,26 +115,35 @@ static int __init aac_init(void)
 	int error;
 
 	printk(KERN_INFO "Adaptec %s driver %s\n",
-	  "aacarid_jy", "0.0.1");
+	  "aacarid", "0.0.1");
 
 	error = pci_register_driver(&aac_pci_driver);
-	if (error < 0)
+	
+	if (error < 0 || list_empty(&aac_devices)){
+		printk(KERN_INFO "aacraid register failed %d at line %d",error,__LINE__);
+		if(error >= 0){
+			pci_unregister_driver(&aac_pci_driver);
+		}
 		return error;
-
-	aac_init_char();
-
+	}
+	//aac_init_char();
 
 	return 0;
 }
 
 static void __exit aac_exit(void)
 {
-	if (aac_cfg_major > -1)
-		unregister_chrdev(aac_cfg_major, "aac");
-	pci_unregister_driver(&aac_pci_driver);
+	//if (aac_cfg_major > -1)
+	//	unregister_chrdev(aac_cfg_major, "aac");
+	//pci_unregister_driver(&aac_pci_driver);
+	printk(KERN_INFO "aacraid aac_exit");
 }
 
 module_init(aac_init);
 module_exit(aac_exit);
 
+MODULE_AUTHOR("Jackey Ling <jackey.ling@microchip.com>");
+MODULE_DESCRIPTION("Aacraid driver");
+MODULE_LICENSE("GPL");
+MODULE_ALIAS("platform:HBA1000");
 
