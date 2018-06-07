@@ -85,18 +85,21 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)	/
 	int unique_id = 0;
 	u32 i = 0;
 	u32 nr_cpu = 0;
-
-	list_for_each_entry(aac,&aac_devices, entry){
+    
+    printk(KERN_INFO, "enter aac_probe_one %d  unique_id %d", __LINE__, unique_id);
+	
+    list_for_each_entry(aac,&aac_devices, entry){
 		printk(KERN_INFO "aac_probe unique_id: %d", unique_id);
 		if(aac->id > unique_id)
 			break;
 		insert = &aac->entry;
 		unique_id++;
 	}
-       
-       	pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1 |
+    
+    pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1 |
 					PCIE_LINK_STATE_CLKPM);
-	error = pci_enable_device(pdev);
+	
+    error = pci_enable_device(pdev);
 	if(error){
 		printk(KERN_ERR " %s: PCI deivce not enabled", __FUNCTION__ );
 		goto out;
@@ -143,19 +146,21 @@ static int __init aac_init(void)
 {
 	int error;
 
-	printk(KERN_INFO "Adaptec %s driver %s\n",
-	  "aacarid", "0.0.1");
+	printk(KERN_INFO "Adaptec %s driver %s\n","aacarid", "0.0.1");
 
-	error = pci_register_driver(&aac_pci_driver);
-	
+    error = pci_register_driver(&aac_pci_driver);
+    
+    printk(KERN_INFO "aac_init register error :%d", error);
+
 	if (error < 0 || list_empty(&aac_devices)){
-		printk(KERN_INFO "aacraid register failed %d at line %d",error,__LINE__);
-		if(error >= 0){
+		
+        if(error >= 0){
 			pci_unregister_driver(&aac_pci_driver);
 		}
 		return error;
 	}
-	//aac_init_char();
+    printk(KERN_INFO "Adaptic probe init end!! %d", __LINE__);
+    //aac_init_char();
 
 	return 0;
 }
