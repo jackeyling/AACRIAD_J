@@ -55,6 +55,8 @@
 #include <scsi/scsicam.h>
 #include <scsi/scsi_eh.h>
 
+#include "aacraid_t.h"
+
 #define AAC_CHARDEV_UNREGISTERED (-1)
 #define AAC_DRIVER_FULL_VERSION (-2)
 
@@ -73,7 +75,7 @@ static const struct pci_device_id aac_pci_tbl[]= {
 MODULE_DEVICE_TABLE(pci,aac_pci_tbl);
 
 
-static int __devinit aac_probe_one(struct pci_dev *dev, const struct pci_device_id *id)	/* New device inserted */
+static int aac_probe_one(struct pci_dev *dev, const struct pci_device_id *id)	/* New device inserted */
 {
 	
 	
